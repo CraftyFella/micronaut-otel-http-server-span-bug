@@ -1,0 +1,33 @@
+micronaut:
+  server:
+    port: 8082
+  application:
+    name: http-server-span-bug
+netty:
+  default:
+    allocator:
+      max-order: 3
+
+otel:
+  traces:
+    exporter: otlp
+    sampler: always_on
+  metrics:
+    exporter: otlp
+  logs:
+    exporter: otlp
+  exporter:
+    otlp:
+      endpoint: http://localhost:4317
+      key: ${random.shortuuid}
+      headers: api-key=${random.shortuuid}
+      compression: gzip
+      instance: ${random.shortuuid}
+    experimental:
+      exporter:
+        otlp:
+          retry:
+            enabled: true
+    metric:
+      export:
+        interval: 5000
