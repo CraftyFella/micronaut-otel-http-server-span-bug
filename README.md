@@ -1,6 +1,7 @@
 ## Span.makeCurrent() causes http server spans to not be created.
 
-This project demos how with the latest version of micronaut and OTEL the http server spans are NOT created when a child span is set as the current span inside a mono.
+This project demos how with the latest version of micronaut and OTEL the http server spans are NOT created when a child span is set as the current span inside a mono. The problem seems to happening on this line 
+https://github.com/CraftyFella/micronaut-otel-http-server-span-bug/blob/main/src/main/kotlin/com/example/Db.kt#L23
 
 Linked to this issue https://github.com/micronaut-projects/micronaut-tracing/issues/475
 
