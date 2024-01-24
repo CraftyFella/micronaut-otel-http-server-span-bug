@@ -14,6 +14,10 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    otel
+}
+
 dependencies {
     ksp("io.micronaut:micronaut-http-validation")
     ksp("io.micronaut.serde:micronaut-serde-processor")
@@ -31,15 +35,24 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml")
 
     // OTEL
-    implementation("io.micronaut.tracing:micronaut-tracing-opentelemetry-http")
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-    implementation 'io.micrometer:context-propagation:1.1.0'
+    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations")
+    implementation("io.opentelemetry:opentelemetry-api")
+    implementation("io.opentelemetry:opentelemetry-sdk")
+
+    // Agent
+    otel("io.opentelemetry.javaagent:opentelemetry-javaagent:1.31.0")
 
     // Reactor
     implementation("io.micronaut.reactor:micronaut-reactor")
 
 }
 
+tasks.withType(JavaExec).configureEach {
+    jvmArgs("-javaagent:${configurations.otel.singleFile}",
+            "-Dotel.service.name=http-server-span-bug",
+            "-Dotel.exporter.otlp.endpoint=http://localhost:4317"
+    )
+}
 
 application {
     mainClass.set("com.example.ApplicationKt")

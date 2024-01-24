@@ -19,7 +19,14 @@ class Author(val id: String, val firstName: String, val lastName: String)
 class DbRepository(private val tracer: Tracer) {
 
     fun findAllBooks(): Mono<List<Book>> {
+        val span = tracer.spanBuilder("findAllBooks").startSpan()
+        val scope = span.makeCurrent()
         return Mono.delay(Duration.ofMillis(0)).map { books }
+            .doOnNext {
+                scope.close()
+                span.end()
+            }
+
     }
 
     fun findAllAuthors(): Mono<List<Author>> {
