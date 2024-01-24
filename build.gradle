@@ -33,6 +33,7 @@ dependencies {
     // OTEL
     implementation("io.micronaut.tracing:micronaut-tracing-opentelemetry-http")
     implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    implementation 'io.micrometer:context-propagation:1.1.0'
 
     // Reactor
     implementation("io.micronaut.reactor:micronaut-reactor")

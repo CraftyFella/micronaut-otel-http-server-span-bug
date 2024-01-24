@@ -19,17 +19,7 @@ class Author(val id: String, val firstName: String, val lastName: String)
 class DbRepository(private val tracer: Tracer) {
 
     fun findAllBooks(): Mono<List<Book>> {
-        val startSpan = tracer.spanBuilder("findAllBooks").startSpan()
-        val makeCurrent = startSpan.makeCurrent()
-
-        // Having a delay even for 0 MS causes the bug
-        // Replacing with mono.just doesn't cause the bug
         return Mono.delay(Duration.ofMillis(0)).map { books }
-            .doOnNext {
-                makeCurrent.close()
-                startSpan.end()
-            }
-
     }
 
     fun findAllAuthors(): Mono<List<Author>> {
