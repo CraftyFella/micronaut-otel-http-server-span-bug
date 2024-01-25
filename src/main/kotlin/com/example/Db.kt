@@ -16,9 +16,10 @@ class Book(val id: String, val name: String, val pageCount: Int, val author: Aut
 class Author(val id: String, val firstName: String, val lastName: String)
 
 @Singleton
-class DbRepository(private val tracer: Tracer) {
+class DbRepository(private val tracer: Tracer, private val requestScopedThing: RequestScopedThing) {
 
     fun findAllBooks(): Mono<List<Book>> {
+        requestScopedThing.printId()
         return Mono.delay(Duration.ofMillis(0)).map { books }
     }
 
