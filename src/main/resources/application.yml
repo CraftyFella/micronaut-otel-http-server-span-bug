@@ -1,6 +1,6 @@
 micronaut:
   server:
-    port: 8082
+    port: 8083
   application:
     name: http-server-span-bug
 netty:
