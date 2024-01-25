@@ -28,8 +28,8 @@ open class ApiController(private val tracer: Tracer,  private val downstreamServ
     {
         requestScopedThing.printId()
 
-        val startSpan = tracer.spanBuilder("davesSpan").startSpan()
-        val scope = startSpan.makeCurrent()
+        val span = tracer.spanBuilder("manuallyCreatedSpan").startSpan()
+        val scope = span.makeCurrent()
 
         return downstreamService.happy()
             .flatMap {
@@ -37,13 +37,13 @@ open class ApiController(private val tracer: Tracer,  private val downstreamServ
             }.map<HttpResponse<Book>?> {
                 HttpResponse.ok()
             }
-            .doOnNext{
+            .doOnNext {
                 scope.close()
-                startSpan.end()
+                span.end()
             }
     }
 
-    @NewSpan("my-fake-db")
+    @NewSpan("annotationSpan")
     open fun findBookById(id: String): Mono<Book> {
         Span.current().updateName("finding book $id")
         return dbRepository.findAllBooks().map { books ->

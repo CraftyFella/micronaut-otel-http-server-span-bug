@@ -20,17 +20,13 @@ class DbRepository(private val tracer: Tracer, private val requestScopedThing: R
 
     fun findAllBooks(): Mono<List<Book>> {
         requestScopedThing.printId()
-        return Mono.delay(Duration.ofMillis(0)).map { books }
+
+        return Mono
+            .delay(Duration.ofMillis(0))
+            .map {
+                books }
     }
 
-    fun findAllAuthors(): Mono<List<Author>> {
-        val startSpan = tracer.spanBuilder("findAllAuthors").startSpan()
-
-        return Mono.delay(Duration.ofMillis(0)).map { books.map(Book::author) }
-            .doOnNext {
-                startSpan.end()
-            }
-    }
 
     companion object {
         private val books = listOf(

@@ -34,4 +34,5 @@ class HttpSpanSessionContext(private val spanExporter: InMemorySpanExporter, val
     fun fetchSpanMatchingOrTimeout(traceId: String, predicate: (SpanData) -> Boolean): SpanData =
         spanExporter.fetchSpanMatchingOrTimeout(traceId, predicate)
 
+
 }

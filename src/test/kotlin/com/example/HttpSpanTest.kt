@@ -15,20 +15,12 @@ class HttpSpanTest {
     lateinit var session: SpanSession
 
     @RepeatedTest(2)
-    fun `1 - get author by id - which does NOT use makeCurrent() will NOT fail second time`() {
-        session.http<Book>(
-            HttpRequest.GET("/api/authors/author-1")
-        ) { ctx ->
-            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/authors/{authorId}" && it.kind == SpanKind.SERVER }
-        }
-    }
-
-    @RepeatedTest(2)
-    fun `2 - get book by id - which uses makeCurrent() will fail second time`() {
+    fun `get book by id - which uses makeCurrent() will fail second time as it will get attached to the wrong parent`() {
         session.http<Book>(
             HttpRequest.GET("/api/books/book-1")
         ) { ctx ->
-            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/books/{bookId}" && it.kind == SpanKind.SERVER }
+            val serverSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/books/{bookId}" && it.kind == SpanKind.SERVER }
+            val manuallyCreatedSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "manuallyCreatedSpan" && it.kind == SpanKind.INTERNAL && it.parentSpanId == serverSpan.spanId }
         }
     }
 
