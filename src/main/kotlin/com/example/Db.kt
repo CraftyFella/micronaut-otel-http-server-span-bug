@@ -2,6 +2,7 @@ package com.example
 
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.serde.annotation.Serdeable
+import io.micronaut.tracing.annotation.NewSpan
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
 import java.time.Duration
@@ -15,11 +16,10 @@ class Book(val id: String, val name: String, val pageCount: Int, val author: Aut
 class Author(val id: String, val firstName: String, val lastName: String)
 
 @Singleton
-class DbRepository(private val requestScopedThing: RequestScopedThing) {
+open class DbRepository {
 
-    fun findAllBooks(): Mono<List<Book>> {
-        requestScopedThing.printId()
-
+    @NewSpan
+    open fun findAllBooks(): Mono<List<Book>> {
         return Mono
             .delay(Duration.ofMillis(0))
             .map {
