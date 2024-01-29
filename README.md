@@ -1,9 +1,6 @@
-## Span.makeCurrent() causes http server spans to not be created.
+## @NewSpan annotation isn't set as parent for new spans
 
-This project demos how with the latest version of micronaut and OTEL the http server spans are NOT created when a child span is set as the current span inside a mono. The problem seems to happening on this line 
-https://github.com/CraftyFella/micronaut-otel-http-server-span-bug/blob/main/src/main/kotlin/com/example/Db.kt#L23
-
-Linked to this issue https://github.com/micronaut-projects/micronaut-tracing/issues/475
+This project demos how with the latest version of micronaut and OTEL the @NewSpan annotation doesn't seem to work as expected. 
 
 ## To Run the test
 
@@ -15,7 +12,7 @@ To see the issue please run
 
 ## To Run the app
 
-In the app this causes a span to get bigger and bigger.
+In the app you'll make a request and see the trace gets split into 2 parts and also that parents aren't always set correctly.
 
 ### Dependencies
 
@@ -32,18 +29,13 @@ Now start the app
 Make a request to see books by id
 
 ```bash
-curl --location 'http://localhost:8082/api/books/book-1'
+curl --location 'http://localhost:8085/api/books/book-1'
 ```
 
-then browse to [http://localhost:16686/](http://localhost:16686/) find the app in the drop down and click Find Traces button.
-![initial trace.png](initial%20trace.png)
-If you use postman and ensure you select keep alive for the connection the spans get bigger and bigger.
+then browse to [http://localhost:16686/](http://localhost:16686/) find the app in the drop down and click Find Traces button. You'll then see that instead of single trace you have 2
 
-![ever-growing-span.png](ever-growing-span.png)
-## Initial investigation
+![2 traces.png](2%20traces.png)
 
-We've tracked the problem down to this [line](https://github.com/micronaut-projects/micronaut-tracing/blob/master/tracing-opentelemetry-http/src/main/java/io/micronaut/tracing/opentelemetry/instrument/http/server/OpenTelemetryServerFilter.java#L82). Where this returns false for the 2nd http request. This uses the
+ALso when you drill into those traces the parent/child relationships aren't always set correctly. E.g. here you see the the `GET` span is a sibling of the `manuallyCreatedSpan`. HOWEVER it SHOULD be a child.
 
-SpanSuppressors.java in OTEL which supresses the 2nd http request as the context seems to have an existing http server key on there.
-![span-suppressor.png](span-suppressor.png)
-At this points i'm not sure what the issue is or how moving from micronaut 3 to 4 has caused this issue.. Would love some help on it.
+![relationship-broken-1.png](relationship-broken-1.png)
