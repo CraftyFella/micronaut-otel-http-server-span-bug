@@ -1,5 +1,6 @@
 package com.example.doubles
 
+import com.example.helpers.SpanPrinter.printSpanTreeWithHeaderAndFooter
 import io.opentelemetry.sdk.common.CompletableResultCode
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SpanExporter
@@ -53,6 +54,7 @@ class InMemorySpanExporter: SpanExporter {
 
     private fun fetchSpansMatching(predicate: (SpanData) -> Boolean): List<SpanData> {
         val allTraces = getFinishedSpanItems()
+        printSpanTreeWithHeaderAndFooter(allTraces.toList())
         return allTraces.filter { predicate(it) }
     }
 
