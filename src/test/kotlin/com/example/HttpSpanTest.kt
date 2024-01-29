@@ -15,16 +15,6 @@ class HttpSpanTest {
     @Inject
     lateinit var session: SpanSession
 
-    @RepeatedTest(2)
-    fun `get book by id - which uses makeCurrent() will fail second time as it will get attached to the wrong parent`() {
-        session.http<Book>(
-            HttpRequest.GET("/api/books/book-1")
-        ) { ctx ->
-            val serverSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/books/{bookId}" && it.kind == SpanKind.SERVER }
-            val manuallyCreatedSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "manuallyCreatedSpan" && it.kind == SpanKind.INTERNAL && it.parentSpanId == serverSpan.spanId }
-        }
-    }
-
     @Test
     fun `manuallyCreatedSpan should become the current span so the next spans should be children`() {
         session.http<Book>(
@@ -32,7 +22,8 @@ class HttpSpanTest {
         ) { ctx ->
             val serverSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/books/{bookId}" && it.kind == SpanKind.SERVER }
             val manuallyCreatedSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "manuallyCreatedSpan" && it.kind == SpanKind.INTERNAL && it.parentSpanId == serverSpan.spanId }
-            val clientSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET" && it.kind == SpanKind.CLIENT && it.parentSpanId == manuallyCreatedSpan.spanId }
+            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET" && it.kind == SpanKind.CLIENT && it.parentSpanId == manuallyCreatedSpan.spanId }
+            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "finding book book-1" && it.kind == SpanKind.INTERNAL && it.parentSpanId == manuallyCreatedSpan.spanId }
         }
     }
 
