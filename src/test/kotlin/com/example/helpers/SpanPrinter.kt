@@ -10,29 +10,25 @@ object SpanPrinter {
 
         println(header)
 
-        for (root in findRoots(spans)) {
+        findRoots(spans).forEach { root ->
             val currentSpanLine = "${root.name} - TraceID: ${root.traceId}, ParentID: ${root.parentSpanId}, SpanID: ${root.spanId}, Kind: ${root.kind}, Status: ${root.status.statusCode}, Attributes Count: ${root.attributes?.size()}"
             println(currentSpanLine)
             printSpanTree(spans, root, "", width)
         }
+
         println(header)
     }
 
     private fun findRoots(spans: List<SpanData>): List<SpanData> {
-        val rootSpans = hashSetOf<SpanData>()
-        for (span in spans) {
-            if (spans.none { it.spanId == span.parentSpanId } || span.parentSpanId == null) {
-                rootSpans.add(span)
-            }
+        return spans.filter { span ->
+            spans.none { it.spanId == span.parentSpanId } || span.parentSpanId == null
         }
-
-        return rootSpans.toList()
     }
 
     private fun printSpanTree(spans: List<SpanData>, currentSpan: SpanData, prefix: String = "", treeWidth: Int) {
         val childSpans = spans.filter { it.parentSpanId == currentSpan.spanId }
 
-        for ((index, span) in childSpans.withIndex()) {
+        childSpans.forEachIndexed { index, span ->
             val isLast = index == childSpans.size - 1
             val branch = if (isLast) "└─ " else "├─ "
             val linePrefix = if (isLast) "    " else "│   "
@@ -43,5 +39,4 @@ object SpanPrinter {
             printSpanTree(spans, span, prefix + linePrefix, treeWidth)
         }
     }
-
 }
