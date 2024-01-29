@@ -19,10 +19,8 @@ object SpanPrinter {
         println(header)
     }
 
-    private fun findRoots(spans: List<SpanData>): List<SpanData> {
-        return spans.filter { span ->
-            spans.none { it.spanId == span.parentSpanId } || span.parentSpanId == null
-        }
+    private fun findRoots(spans: List<SpanData>): List<SpanData> = spans.filter { span ->
+        spans.none { it.spanId == span.parentSpanId } || span.parentSpanId == null
     }
 
     private fun printSpanTree(spans: List<SpanData>, currentSpan: SpanData, prefix: String = "", treeWidth: Int) {
