@@ -1,6 +1,6 @@
 ## @NewSpan annotation isn't set as parent for new spans
 
-This project demos how with the latest version of micronaut and OTEL the @NewSpan annotation doesn't seem to work as expected. 
+This project demos how with the latest version of micronaut and OTEL the @NewSpan annotation doesn't seem to work as expected. If you want to see it WORKING checkout the micronaut 3 version of this code on this branch https://github.com/CraftyFella/micronaut-otel-http-server-span-bug/tree/annotation-working-v3 
 
 ## To Run the test
 
