@@ -20,9 +20,9 @@ class HttpSpanTest {
         session.http<Book>(
             HttpRequest.GET("/api/books/book-1")
         ) { ctx ->
-            val serverSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET /api/books/{bookId}" && it.kind == SpanKind.SERVER }
+            val serverSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "/api/books/{bookId}" && it.kind == SpanKind.SERVER }
             val manuallyCreatedSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "manuallyCreatedSpan" && it.kind == SpanKind.INTERNAL && it.parentSpanId == serverSpan.spanId }
-            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "GET" && it.kind == SpanKind.CLIENT && it.parentSpanId == manuallyCreatedSpan.spanId }
+            ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "HTTP GET" && it.kind == SpanKind.CLIENT && it.parentSpanId == manuallyCreatedSpan.spanId }
             val dynamicallyNamedSpan = ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "finding book book-1" && it.kind == SpanKind.INTERNAL && it.parentSpanId == manuallyCreatedSpan.spanId }
             ctx.fetchSpanMatchingOrTimeout(ctx.traceId) { it.name == "DbRepository.findAllBooks" && it.kind == SpanKind.INTERNAL && it.parentSpanId == dynamicallyNamedSpan.spanId }
         }

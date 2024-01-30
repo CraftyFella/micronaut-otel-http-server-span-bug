@@ -2,7 +2,7 @@ micronaut:
   server:
     port: 8085
   application:
-    name: http-server-span-bug
+    name: http-server-span-bug-v3
 netty:
   default:
     allocator:
